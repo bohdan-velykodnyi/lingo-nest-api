@@ -7,6 +7,7 @@ import config, { GqlConfigService, TypeOrmConfigService } from './core/config';
 import { ApolloDriver } from '@nestjs/apollo';
 import { AuthorizationModule } from 'modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { ThrottlerConfigService } from 'core/service/throttler.service';
 
 @Module({
   imports: [
@@ -22,23 +23,9 @@ import { ThrottlerModule } from '@nestjs/throttler';
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
     }),
-    ThrottlerModule.forRoot([
-      {
-        name: 'short',
-        ttl: 1000,
-        limit: 20,
-      },
-      {
-        name: 'medium',
-        ttl: 10000,
-        limit: 100,
-      },
-      {
-        name: 'long',
-        ttl: 60000,
-        limit: 200,
-      },
-    ]),
+    ThrottlerModule.forRootAsync({
+      useClass: ThrottlerConfigService,
+    }),
     AuthorizationModule,
   ],
 })
