@@ -8,11 +8,9 @@ import { ConfigService } from '@nestjs/config';
 import { type ConfigType } from 'core/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cron } from '@nestjs/schedule';
-import { Logger } from '@nestjs/common';
 
 export class TokenService {
   private expiresInRefresh: number;
-  private readonly logger = new Logger(TokenService.name);
 
   constructor(
     @InjectRepository(Token)

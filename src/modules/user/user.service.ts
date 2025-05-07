@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, Logger } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { type CreateUserDto } from './dto/user.dto';
 import {
@@ -14,6 +14,8 @@ import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialE
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
@@ -24,6 +26,8 @@ export class UserService {
   }
 
   public async create(user: CreateUserDto): Promise<User> {
+    this.logger.log('Creating user: ', user);
+
     const findUser = this.userRepository.findOne({
       where: { email: user.email },
     });
@@ -61,6 +65,8 @@ export class UserService {
     id: string,
     partialEntity: QueryDeepPartialEntity<User>,
   ) {
+    this.logger.log('Updating user and return: ', id, partialEntity);
+
     await this.update(id, partialEntity);
     const newUser = await this.userRepository.findOne({ where: { id } });
 
@@ -76,6 +82,8 @@ export class UserService {
     partialEntity: QueryDeepPartialEntity<User>,
   ): Promise<UpdateResult> {
     try {
+      this.logger.log('Updating user: ', id, partialEntity);
+
       return await this.userRepository.update(id, partialEntity);
     } catch (error) {
       throw new Error('The record was not found');
