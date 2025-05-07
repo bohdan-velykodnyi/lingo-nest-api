@@ -1,15 +1,18 @@
-import { FindOptionsWhere, Repository } from 'typeorm';
+import { type FindOptionsWhere, LessThan, Repository } from 'typeorm';
 import { Token } from './entity/token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { JwtPayload } from './types/jwt-payload';
+import { type JwtPayload } from './types/jwt-payload';
 import { randomBytes } from 'crypto';
 import * as dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
-import { ConfigType } from 'core/config';
+import { type ConfigType } from 'core/config';
 import { JwtService } from '@nestjs/jwt';
+import { Cron } from '@nestjs/schedule';
+import { Logger } from '@nestjs/common';
 
 export class TokenService {
   private expiresInRefresh: number;
+  private readonly logger = new Logger(TokenService.name);
 
   constructor(
     @InjectRepository(Token)
@@ -74,12 +77,18 @@ export class TokenService {
     });
   }
 
+  public async validateAccessToken(token: string): Promise<Token> {
+    return this.jwtService.verify(token);
+  }
+
   public async validateRefreshToken(refresh_token: string): Promise<Token> {
     const token = await this.tokenRepository.findOne({
       where: { refresh_token },
     });
 
-    if (!token) throw new Error('Refresh token not found');
+    if (!token) {
+      throw new Error('Refresh token not found');
+    }
 
     const current_date = dayjs().unix();
 
@@ -97,6 +106,19 @@ export class TokenService {
       await this.tokenRepository.delete(criteria);
     } catch (error) {
       throw new Error('The records was not found');
+    }
+  }
+
+  @Cron('0 0 * * *') // Run daily
+  public async cleanupExpiredTokens(): Promise<void> {
+    const expiredTokens = await this.tokenRepository.find({
+      where: {
+        expires_in: LessThan(dayjs().unix()),
+      },
+    });
+
+    for (const token of expiredTokens) {
+      await this.deleteByCriteria({ id: token.id });
     }
   }
 }

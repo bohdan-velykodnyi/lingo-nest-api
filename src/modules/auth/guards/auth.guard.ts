@@ -1,4 +1,8 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  type CanActivate,
+  type ExecutionContext,
+  Injectable,
+} from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
 import { GraphQLError } from 'graphql';
 import { TokenService } from '../token/token.service';
@@ -17,7 +21,7 @@ export class GqlAuthGuard implements CanActivate {
     if (!ctx.req.headers.authorization) throw new GraphQLError('Unauthorized');
 
     const token = ctx.req.headers.authorization.replace('Bearer ', '');
-    const res = await this.tokenService.validateAccessToken(token, false);
+    const res = await this.tokenService.validateAccessToken(token);
 
     ctx.req.user = res;
 

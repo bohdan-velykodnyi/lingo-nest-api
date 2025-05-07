@@ -5,7 +5,7 @@ import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import config, { GqlConfigService, TypeOrmConfigService } from './core/config';
 import { ApolloDriver } from '@nestjs/apollo';
-import { AppResolver } from './app.resolver';
+import { AuthorizationModule } from 'modules/auth/auth.module';
 
 @Module({
   imports: [
@@ -21,7 +21,7 @@ import { AppResolver } from './app.resolver';
     TypeOrmModule.forRootAsync({
       useClass: TypeOrmConfigService,
     }),
+    AuthorizationModule,
   ],
-  providers: [AppResolver],
 })
 export class AppModule {}

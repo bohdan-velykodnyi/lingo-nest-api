@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
 import { User } from './entity/user.entity';
-import { CreateUserDto } from './dto/user.dto';
+import { type CreateUserDto } from './dto/user.dto';
 import {
-  Brackets,
-  FindOneOptions,
-  ObjectLiteral,
+  type Brackets,
+  type FindOneOptions,
+  type ObjectLiteral,
   Repository,
-  SelectQueryBuilder,
-  UpdateResult,
+  type SelectQueryBuilder,
+  type UpdateResult,
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
 
 @Injectable()
 export class UserService {
@@ -24,6 +24,14 @@ export class UserService {
   }
 
   public async create(user: CreateUserDto): Promise<User> {
+    const findUser = this.userRepository.findOne({
+      where: { email: user.email },
+    });
+
+    if (findUser) {
+      throw new Error('User already exists');
+    }
+
     return await this.userRepository.save(user);
   }
 
