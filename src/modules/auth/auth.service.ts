@@ -2,17 +2,19 @@ import { Injectable } from '@nestjs/common';
 import { compare, genSalt, hash } from 'bcryptjs';
 import { type LoginDto } from './dto/login.dto';
 import { type TokenResponse } from './response/token.response';
-import { TokenService } from './token/token.service';
+import { TokenService } from './modules/token/token.service';
 import { type ChangePasswordDto } from './dto/change-password.dto';
 import { UserService } from '../user/user.service';
 import { type CreateUserDto } from '../user/dto/user.dto';
 import { type User } from '../user/entity/user.entity';
+import { RateLimiterService } from './modules/rate-limiter/rate-limiter.service';
 
 @Injectable()
 export class AuthorizationService {
   constructor(
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    private readonly rateLimiter: RateLimiterService,
   ) {}
 
   public async registration(credentials: CreateUserDto): Promise<User> {
@@ -24,20 +26,24 @@ export class AuthorizationService {
     });
   }
 
-  public async login(credentials: LoginDto): Promise<TokenResponse> {
-    const loginResult = await this.validateLogin(credentials);
+  public async login(
+    credentials: LoginDto,
+    ip: string,
+  ): Promise<TokenResponse> {
+    try {
+      await this.rateLimiter.checkLoginAttempts(ip, credentials.email);
 
-    const user_id = loginResult.id;
+      const user = await this.validateLogin(credentials);
 
-    const access_token = await this.tokenService.createAccessToken({
-      user_id,
-    });
-    const refresh_token = await this.tokenService.createRefreshToken(user_id);
+      const user_id = user.id;
 
-    return {
-      access_token,
-      refresh_token,
-    };
+      return await this.tokenService.generateTokens({
+        user_id,
+      });
+    } catch (error) {
+      await this.rateLimiter.recordFailedAttempt(ip, credentials.email);
+      throw new Error(error);
+    }
   }
 
   public async logout(user_id: string, refresh_token: string): Promise<string> {

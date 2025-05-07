@@ -1,0 +1,9 @@
+import { createParamDecorator, type ExecutionContext } from '@nestjs/common';
+import { GqlExecutionContext } from '@nestjs/graphql';
+
+export const Ip = createParamDecorator(
+  (data: unknown, context: ExecutionContext) => {
+    const ctx = GqlExecutionContext.create(context);
+    return ctx.getContext().req.ip;
+  },
+);

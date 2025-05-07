@@ -7,9 +7,10 @@ import { CreateUserDto } from 'modules/User/dto/user.dto';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './guards/auth.guard';
 import { CurrentUser } from './decorator/current-user';
-import { JwtPayload } from './token/types/jwt-payload';
+import { JwtPayload } from './modules/token/types/jwt-payload';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserService } from 'modules/user/user.service';
+import { Ip } from 'core/decorator/ip.decorator';
 
 @Resolver()
 export class AuthorizationResolver {
@@ -22,8 +23,9 @@ export class AuthorizationResolver {
   login(
     @Args('credentials', { type: () => LoginDto })
     credentials: LoginDto,
+    @Ip() ip: string,
   ): Promise<TokenResponse> {
-    return this.authorizationService.login(credentials);
+    return this.authorizationService.login(credentials, ip);
   }
 
   @Mutation(() => User)

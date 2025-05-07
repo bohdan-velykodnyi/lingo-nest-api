@@ -22,43 +22,29 @@ export class TokenService {
     this.expiresInRefresh = jwtConfig.refresh_expire;
   }
 
+  public async generateTokens(
+    payload: JwtPayload,
+  ): Promise<{ access_token: string; refresh_token: string }> {
+    const access_token = await this.createAccessToken(payload);
+    const refresh_token = await this.createRefreshToken(payload.user_id);
+
+    return {
+      access_token,
+      refresh_token,
+    };
+  }
+
   public async createAccessTokenFromRefreshToken(
     refresh_token: string,
     access_payload: JwtPayload,
   ) {
     const token = await this.validateRefreshToken(refresh_token);
 
-    const access_token = await this.createAccessToken({
-      ...access_payload,
-    });
-
-    const new_refresh_token = await this.createRefreshToken(token.user_id);
+    const tokens = await this.generateTokens(access_payload);
 
     await this.deleteByCriteria({ id: token.id });
 
-    return {
-      access_token,
-      refresh_token: new_refresh_token,
-    };
-  }
-
-  public async createAccessToken(payload: JwtPayload): Promise<string> {
-    return this.jwtService.sign(payload);
-  }
-
-  public async createRefreshToken(user_id: string): Promise<string> {
-    const refresh_token = randomBytes(64).toString('hex');
-    const expires_in = dayjs().add(this.expiresInRefresh, 'd').unix();
-
-    const refresh: Omit<Token, 'id'> = {
-      user_id,
-      refresh_token,
-      expires_in,
-    };
-
-    await this.tokenRepository.save(refresh);
-
-    return refresh_token;
+    return tokens;
   }
 
   public async deleteRefreshTokenForUser(user_id: string): Promise<void> {
@@ -97,6 +83,25 @@ export class TokenService {
     return token;
   }
 
+  private async createAccessToken(payload: JwtPayload): Promise<string> {
+    return this.jwtService.sign(payload);
+  }
+
+  private async createRefreshToken(user_id: string): Promise<string> {
+    const refresh_token = randomBytes(64).toString('hex');
+    const expires_in = dayjs().add(this.expiresInRefresh, 'd').unix();
+
+    const refresh: Omit<Token, 'id'> = {
+      user_id,
+      refresh_token,
+      expires_in,
+    };
+
+    await this.tokenRepository.save(refresh);
+
+    return refresh_token;
+  }
+
   private async deleteByCriteria(
     criteria: FindOptionsWhere<Token>,
   ): Promise<void> {
@@ -108,7 +113,7 @@ export class TokenService {
   }
 
   @Cron('0 0 * * *') // Run daily
-  public async cleanupExpiredTokens(): Promise<void> {
+  private async cleanupExpiredTokens(): Promise<void> {
     const expiredTokens = await this.tokenRepository.find({
       where: {
         expires_in: LessThan(dayjs().unix()),
