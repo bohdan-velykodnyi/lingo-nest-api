@@ -3,9 +3,10 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { LoginAttempt } from './entity/login-attempt.entity';
 import { Cron } from '@nestjs/schedule';
+import { CrudService } from 'core/service/crud/crud.service';
 
 @Injectable()
-export class RateLimiterService {
+export class RateLimiterService extends CrudService<LoginAttempt> {
   private readonly logger = new Logger(RateLimiterService.name);
   private readonly MAX_ATTEMPTS = 5;
   private readonly BLOCK_DURATION = 15 * 60 * 1000; // 15 minutes
@@ -13,7 +14,9 @@ export class RateLimiterService {
   constructor(
     @InjectRepository(LoginAttempt)
     private readonly loginAttemptRepository: Repository<LoginAttempt>,
-  ) {}
+  ) {
+    super(loginAttemptRepository);
+  }
 
   public async checkLoginAttempts(ip: string, email: string): Promise<void> {
     const attempts = await this.getRecentAttempts(ip, email);
@@ -41,7 +44,7 @@ export class RateLimiterService {
   ): Promise<LoginAttempt[]> {
     const timeWindow = new Date(Date.now() - this.BLOCK_DURATION);
 
-    return this.loginAttemptRepository.find({
+    return this.findAll({
       where: [
         { ip, timestamp: MoreThan(timeWindow) },
         { email, timestamp: MoreThan(timeWindow) },
@@ -58,7 +61,7 @@ export class RateLimiterService {
   @Cron('0 0 * * *') // Run daily
   public async cleanupOldRecords(): Promise<void> {
     const timeWindow = new Date(Date.now() - this.BLOCK_DURATION);
-    await this.loginAttemptRepository.delete({
+    await this.deleteByCriteria({
       timestamp: MoreThan(timeWindow),
     });
     this.logger.log('Old login attempts cleaned up');

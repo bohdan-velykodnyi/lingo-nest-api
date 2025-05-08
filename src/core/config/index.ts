@@ -11,10 +11,8 @@ export { GqlConfigService, TypeOrmConfigService };
 
 export interface ConfigType {
   app: {
-    backend_url: string;
-    frontend_url: string;
     port: number;
-    open_ai_key: string;
+    nodeEnv: string;
   };
   graphql: {
     playground: boolean;

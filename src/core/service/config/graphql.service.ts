@@ -19,6 +19,7 @@ export class GqlConfigService implements GqlOptionsFactory {
       context: ({ req, connection }) =>
         connection ? { req: connection.context } : { req },
       ...this.config,
+      graphiql: true,
     };
   }
 }

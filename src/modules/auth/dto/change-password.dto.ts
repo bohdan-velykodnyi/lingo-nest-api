@@ -1,13 +1,25 @@
 import { Field, InputType } from '@nestjs/graphql';
-import { IsNotEmpty } from 'class-validator';
+import { IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 
 @InputType()
 export class ChangePasswordDto {
   @IsNotEmpty({ message: 'The password field cannot be empty' })
+  @MaxLength(64, {
+    message: 'The name field must be less than or equal to 64 characters',
+  })
+  @MinLength(8, {
+    message: 'The name field must be greater than or equal to 8 characters',
+  })
   @Field(() => String)
   old_password: string;
 
   @IsNotEmpty({ message: 'The password field cannot be empty' })
+  @MaxLength(64, {
+    message: 'The name field must be less than or equal to 64 characters',
+  })
+  @MinLength(8, {
+    message: 'The name field must be greater than or equal to 8 characters',
+  })
   @Field(() => String)
   new_password: string;
 }

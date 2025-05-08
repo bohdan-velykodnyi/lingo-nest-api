@@ -37,13 +37,12 @@ export class TokenService extends CrudService<Token> {
     };
   }
 
-  public async createAccessTokenFromRefreshToken(
-    refresh_token: string,
-    access_payload: JwtPayload,
-  ) {
+  public async refreshBothTokens(refresh_token: string) {
     const token = await this.validateRefreshToken(refresh_token);
 
-    const tokens = await this.generateTokens(access_payload);
+    const tokens = await this.generateTokens({
+      user_id: token.user_id,
+    });
 
     await this.deleteByCriteria({ id: token.id });
 
@@ -65,7 +64,11 @@ export class TokenService extends CrudService<Token> {
   }
 
   public async validateAccessToken(token: string): Promise<Token> {
-    return this.jwtService.verify(token);
+    try {
+      return this.jwtService.verify(token);
+    } catch {
+      throw new ForbiddenException('Invalid access token');
+    }
   }
 
   public async validateRefreshToken(refresh_token: string): Promise<Token> {

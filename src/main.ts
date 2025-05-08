@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { ConfigService } from '@nestjs/config';
 import 'tsconfig-paths/register';
-import { ValidationPipe } from '@nestjs/common';
 import {
   GraphqlErrorFilter,
   ValidationErrorFilter,
@@ -11,6 +10,7 @@ import { PerformanceInterceptor } from 'core/interceptor/performance.interceptor
 import * as compression from 'compression';
 import helmet from 'helmet';
 import { FileBasedLogger } from 'core/logger/file-based.logger';
+import { CustomValidationPipe } from 'core/pipe/class-validator.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -20,13 +20,13 @@ async function bootstrap() {
 
   app.useLogger(new FileBasedLogger());
   app.useGlobalFilters(new GraphqlErrorFilter(), new ValidationErrorFilter());
-  app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new CustomValidationPipe());
   app.useGlobalInterceptors(new PerformanceInterceptor());
   app.use(compression());
   app.use(
     helmet({
       contentSecurityPolicy:
-        process.env.NODE_ENV === 'production' ? undefined : false,
+        configService.get('app.nodeEnv') === 'production' ? undefined : false,
     }),
   );
   app.enableCors();

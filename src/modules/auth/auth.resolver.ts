@@ -11,12 +11,14 @@ import { JwtPayload } from './modules/token/types/jwt-payload';
 import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserService } from 'modules/user/user.service';
 import { Ip } from 'core/decorator/ip.decorator';
+import { TokenService } from './modules/token/token.service';
 
 @Resolver()
 export class AuthorizationResolver {
   constructor(
     private readonly authorizationService: AuthorizationService,
     private readonly userService: UserService,
+    private readonly tokenService: TokenService,
   ) {}
 
   @Mutation(() => TokenResponse)
@@ -34,6 +36,14 @@ export class AuthorizationResolver {
     credentials: CreateUserDto,
   ): Promise<User> {
     return this.authorizationService.registration(credentials);
+  }
+
+  @Mutation(() => TokenResponse)
+  refreshTokens(
+    @Args('refresh_token', { type: () => String })
+    refresh_token: string,
+  ): Promise<TokenResponse> {
+    return this.tokenService.refreshBothTokens(refresh_token);
   }
 
   @UseGuards(GqlAuthGuard)
