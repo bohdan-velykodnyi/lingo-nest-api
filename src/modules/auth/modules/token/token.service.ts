@@ -1,4 +1,4 @@
-import { type FindOptionsWhere, LessThan, Repository } from 'typeorm';
+import { LessThan, Repository } from 'typeorm';
 import { Token } from './entity/token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type JwtPayload } from './types/jwt-payload';
@@ -8,8 +8,10 @@ import { ConfigService } from '@nestjs/config';
 import { type ConfigType } from 'core/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cron } from '@nestjs/schedule';
+import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { CrudService } from 'core/service/crud/crud.service';
 
-export class TokenService {
+export class TokenService extends CrudService<Token> {
   private expiresInRefresh: number;
 
   constructor(
@@ -18,6 +20,7 @@ export class TokenService {
     private readonly jwtService: JwtService,
     configService: ConfigService,
   ) {
+    super(tokenRepository);
     const jwtConfig = configService.get<ConfigType['jwt']>('jwt');
     this.expiresInRefresh = jwtConfig.refresh_expire;
   }
@@ -66,18 +69,18 @@ export class TokenService {
   }
 
   public async validateRefreshToken(refresh_token: string): Promise<Token> {
-    const token = await this.tokenRepository.findOne({
+    const token = await this.findOne({
       where: { refresh_token },
     });
 
     if (!token) {
-      throw new Error('Refresh token not found');
+      throw new BadRequestException('Refresh token not found');
     }
 
     const current_date = dayjs().unix();
 
     if (token.expires_in < current_date) {
-      throw new Error('Refresh token expired');
+      throw new ForbiddenException('Refresh token expired');
     }
 
     return token;
@@ -97,19 +100,9 @@ export class TokenService {
       expires_in,
     };
 
-    await this.tokenRepository.save(refresh);
+    await this.create(refresh);
 
     return refresh_token;
-  }
-
-  private async deleteByCriteria(
-    criteria: FindOptionsWhere<Token>,
-  ): Promise<void> {
-    try {
-      await this.tokenRepository.delete(criteria);
-    } catch {
-      throw new Error('The records was not found');
-    }
   }
 
   @Cron('0 0 * * *') // Run daily

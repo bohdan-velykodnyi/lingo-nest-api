@@ -7,7 +7,7 @@ import config, { GqlConfigService, TypeOrmConfigService } from './core/config';
 import { ApolloDriver } from '@nestjs/apollo';
 import { AuthorizationModule } from 'modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { ThrottlerConfigService } from 'core/service/throttler.service';
+import { ThrottlerConfigService } from 'core/service/config/throttler.service';
 
 @Module({
   imports: [

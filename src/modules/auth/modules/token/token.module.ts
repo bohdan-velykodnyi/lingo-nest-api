@@ -3,7 +3,7 @@ import { TokenService } from './token.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Token } from './entity/token.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { JwtConfigService } from 'core/service/jwt.service';
+import { JwtConfigService } from 'core/service/config/jwt.service';
 
 @Global()
 @Module({

@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { type GqlOptionsFactory } from '@nestjs/graphql';
-import { type ConfigType } from '../config';
+import { type ConfigType } from '../../config';
 import { type ApolloDriverConfig } from '@nestjs/apollo';
 
 @Injectable()

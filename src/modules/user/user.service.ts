@@ -1,28 +1,24 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { User } from './entity/user.entity';
 import { type CreateUserDto } from './dto/user.dto';
 import {
   type Brackets,
-  type FindOneOptions,
   type ObjectLiteral,
   Repository,
   type SelectQueryBuilder,
-  type UpdateResult,
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { type QueryDeepPartialEntity } from 'typeorm/query-builder/QueryPartialEntity';
+import { CrudService } from 'core/service/crud/crud.service';
 
 @Injectable()
-export class UserService {
+export class UserService extends CrudService<User> {
   private readonly logger = new Logger(UserService.name);
 
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
-  ) {}
-
-  public async findOne(options: FindOneOptions<User>) {
-    return this.userRepository.findOne(options);
+  ) {
+    super(userRepository);
   }
 
   public async create(user: CreateUserDto): Promise<User> {
@@ -33,7 +29,7 @@ export class UserService {
     });
 
     if (findUser) {
-      throw new Error('User already exists');
+      throw new BadRequestException('User already exists');
     }
 
     return await this.userRepository.save(user);
@@ -55,38 +51,9 @@ export class UserService {
       .getOne();
 
     if (!user) {
-      throw new Error('User not found');
+      throw new BadRequestException('User not found');
     }
 
     return user;
-  }
-
-  public async updateAndReturn(
-    id: string,
-    partialEntity: QueryDeepPartialEntity<User>,
-  ) {
-    this.logger.log('Updating user and return: ', id, partialEntity);
-
-    await this.update(id, partialEntity);
-    const newUser = await this.userRepository.findOne({ where: { id } });
-
-    if (newUser) {
-      throw new Error('User not found');
-    }
-
-    return newUser;
-  }
-
-  public async update(
-    id: string,
-    partialEntity: QueryDeepPartialEntity<User>,
-  ): Promise<UpdateResult> {
-    try {
-      this.logger.log('Updating user: ', id, partialEntity);
-
-      return await this.userRepository.update(id, partialEntity);
-    } catch {
-      throw new Error('The record was not found');
-    }
   }
 }

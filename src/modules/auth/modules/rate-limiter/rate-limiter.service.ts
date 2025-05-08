@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { LoginAttempt } from './entity/login-attempt.entity';
@@ -19,7 +19,9 @@ export class RateLimiterService {
     const attempts = await this.getRecentAttempts(ip, email);
 
     if (this.isBlocked(attempts)) {
-      throw new Error('Too many login attempts. Please try again later.');
+      throw new ForbiddenException(
+        'Too many login attempts. Please try again later.',
+      );
     }
   }
 

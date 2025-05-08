@@ -1,7 +1,7 @@
 import appConfig from './app.config';
 import graphqlConfig from './graphql.config';
-import { GqlConfigService } from '../service/graphql.service';
-import { TypeOrmConfigService } from '../service/typeorm.service';
+import { GqlConfigService } from '../service/config/graphql.service';
+import { TypeOrmConfigService } from '../service/config/typeorm.service';
 import typeormConfig from './typeorm.config';
 import jwtConfig from './jwt.config';
 

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { compare, genSalt, hash } from 'bcryptjs';
 import { type LoginDto } from './dto/login.dto';
 import { type TokenResponse } from './response/token.response';
@@ -42,7 +42,7 @@ export class AuthorizationService {
       });
     } catch (error) {
       await this.rateLimiter.recordFailedAttempt(ip, credentials.email);
-      throw new Error(error);
+      throw error;
     }
   }
 
@@ -64,7 +64,7 @@ export class AuthorizationService {
 
     const passwordMatch = await compare(old_password, user.password);
 
-    if (!passwordMatch) throw new Error('Incorrect password');
+    if (!passwordMatch) throw new ForbiddenException('Incorrect password');
 
     const password = await this.hashPassword(new_password);
 
@@ -87,11 +87,12 @@ export class AuthorizationService {
 
     const user = await this.userService.getUserWithPass({ email });
 
-    if (!user) throw new Error('Incorrect email or password');
+    if (!user) throw new ForbiddenException('Incorrect email or password');
 
     const passwordMatch = await compare(password, user.password);
 
-    if (!passwordMatch) throw new Error('Incorrect email or password');
+    if (!passwordMatch)
+      throw new ForbiddenException('Incorrect email or password');
 
     return user;
   }
