@@ -10,16 +10,25 @@ import {
 import { PerformanceInterceptor } from 'core/interceptor/performance.interceptor';
 import * as compression from 'compression';
 import helmet from 'helmet';
+import { FileBasedLogger } from 'core/logger/file-based.logger';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    bufferLogs: true,
+  });
   const configService = app.get(ConfigService);
 
+  app.useLogger(new FileBasedLogger());
   app.useGlobalFilters(new GraphqlErrorFilter(), new ValidationErrorFilter());
   app.useGlobalPipes(new ValidationPipe());
   app.useGlobalInterceptors(new PerformanceInterceptor());
   app.use(compression());
-  app.use(helmet());
+  app.use(
+    helmet({
+      contentSecurityPolicy:
+        process.env.NODE_ENV === 'production' ? undefined : false,
+    }),
+  );
   app.enableCors();
 
   await app.listen(configService.get('app.port'));

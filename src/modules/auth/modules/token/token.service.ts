@@ -107,7 +107,7 @@ export class TokenService {
   ): Promise<void> {
     try {
       await this.tokenRepository.delete(criteria);
-    } catch (error) {
+    } catch {
       throw new Error('The records was not found');
     }
   }

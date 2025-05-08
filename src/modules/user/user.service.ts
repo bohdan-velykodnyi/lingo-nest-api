@@ -85,7 +85,7 @@ export class UserService {
       this.logger.log('Updating user: ', id, partialEntity);
 
       return await this.userRepository.update(id, partialEntity);
-    } catch (error) {
+    } catch {
       throw new Error('The record was not found');
     }
   }
