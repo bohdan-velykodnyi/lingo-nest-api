@@ -2,6 +2,7 @@ import { Field, ID, InputType, OmitType } from '@nestjs/graphql';
 import { User } from '../entity/user.entity';
 import { IsEmail, IsNotEmpty, MaxLength, MinLength } from 'class-validator';
 import { Transform } from 'class-transformer';
+import { UserRole } from '../enum/user-role.enum';
 
 @InputType()
 export class UserInput extends User {
@@ -30,7 +31,11 @@ export class UserInput extends User {
     message: 'The name field must be less than or equal to 50 characters',
   })
   name: string;
+
+  @Field(() => UserRole)
+  @IsNotEmpty({ message: 'The role field cannot be empty' })
+  role: UserRole;
 }
 
 @InputType()
-export class CreateUserDto extends OmitType(UserInput, ['id']) {}
+export class CreateUserDto extends OmitType(UserInput, ['id', 'name']) {}

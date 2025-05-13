@@ -24,15 +24,18 @@ export class UserService extends CrudService<User> {
   public async create(user: CreateUserDto): Promise<User> {
     this.logger.log('Creating user: ', user);
 
-    const findUser = this.userRepository.findOne({
+    const findUser = await this.userRepository.findOne({
       where: { email: user.email },
     });
 
     if (findUser) {
-      throw new BadRequestException('User already exists');
+      throw new BadRequestException('User with this email already exists');
     }
 
-    return await this.userRepository.save(user);
+    return await this.userRepository.save({
+      ...user,
+      name: user.email.split('@')[0],
+    });
   }
 
   public async getUserWithPass(

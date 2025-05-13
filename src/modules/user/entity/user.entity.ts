@@ -1,5 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { UserRole } from '../enum/user-role.enum';
 
 @ObjectType()
 @Entity()
@@ -22,4 +23,10 @@ export class User {
   @Field(() => String)
   @Column()
   name: string;
+
+  @Column({
+    type: 'enum',
+    enum: UserRole,
+  })
+  role: UserRole;
 }
