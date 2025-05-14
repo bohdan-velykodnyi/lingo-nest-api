@@ -8,7 +8,7 @@ import { ConfigService } from '@nestjs/config';
 import { type ConfigType } from 'core/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cron } from '@nestjs/schedule';
-import { BadRequestException, ForbiddenException } from '@nestjs/common';
+import { BadRequestException, UnauthorizedException } from '@nestjs/common';
 import { CrudService } from 'core/service/crud/crud.service';
 
 export class TokenService extends CrudService<Token> {
@@ -67,7 +67,7 @@ export class TokenService extends CrudService<Token> {
     try {
       return this.jwtService.verify(token);
     } catch {
-      throw new ForbiddenException('Invalid access token');
+      throw new UnauthorizedException('Invalid access token');
     }
   }
 
@@ -83,7 +83,7 @@ export class TokenService extends CrudService<Token> {
     const current_date = dayjs().unix();
 
     if (token.expires_in < current_date) {
-      throw new ForbiddenException('Refresh token expired');
+      throw new UnauthorizedException('Refresh token expired');
     }
 
     return token;

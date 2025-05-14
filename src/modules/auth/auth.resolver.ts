@@ -3,7 +3,7 @@ import { AuthorizationService } from './auth.service';
 import { LoginDto } from './dto/login.dto';
 import { TokenResponse } from './response/token.response';
 import { User } from 'modules/user/entity/user.entity';
-import { CreateUserDto } from 'modules/User/dto/user.dto';
+import { CreateUserDto } from 'modules/user/dto/user.dto';
 import { UseGuards } from '@nestjs/common';
 import { GqlAuthGuard } from './guards/auth.guard';
 import { CurrentUser } from './decorator/current-user';
@@ -12,6 +12,8 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserService } from 'modules/user/user.service';
 import { Ip } from 'core/decorator/ip.decorator';
 import { TokenService } from './modules/token/token.service';
+import { ForgotPasswordDto } from './dto/forgot-password.dto';
+import { ResetPasswordDto } from './dto/reset-password.dto';
 
 @Resolver()
 export class AuthorizationResolver {
@@ -69,6 +71,22 @@ export class AuthorizationResolver {
     @CurrentUser() { user_id }: JwtPayload,
   ): Promise<string> {
     return this.authorizationService.changePassword(passwords, user_id);
+  }
+
+  @Mutation(() => String)
+  forgotPassword(
+    @Args('forgotPasswordDto', { type: () => ForgotPasswordDto })
+    forgotPasswordDto: ForgotPasswordDto,
+  ): Promise<string> {
+    return this.authorizationService.forgotPassword(forgotPasswordDto);
+  }
+
+  @Mutation(() => String)
+  resetPassword(
+    @Args('resetPasswordDto', { type: () => ResetPasswordDto })
+    resetPasswordDto: ResetPasswordDto,
+  ): Promise<string> {
+    return this.authorizationService.resetPassword(resetPasswordDto);
   }
 
   @UseGuards(GqlAuthGuard)

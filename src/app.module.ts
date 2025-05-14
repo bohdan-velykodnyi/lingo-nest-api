@@ -8,6 +8,8 @@ import { ApolloDriver } from '@nestjs/apollo';
 import { AuthorizationModule } from 'modules/auth/auth.module';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerConfigService } from 'core/service/config/throttler.service';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { MailerConfigService } from 'core/service/config/mailer.service';
 
 @Module({
   imports: [
@@ -25,6 +27,9 @@ import { ThrottlerConfigService } from 'core/service/config/throttler.service';
     }),
     ThrottlerModule.forRootAsync({
       useClass: ThrottlerConfigService,
+    }),
+    MailerModule.forRootAsync({
+      useClass: MailerConfigService,
     }),
     AuthorizationModule,
   ],

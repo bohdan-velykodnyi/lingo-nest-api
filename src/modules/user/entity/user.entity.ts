@@ -24,9 +24,16 @@ export class User {
   @Column()
   name: string;
 
+  @Field(() => UserRole)
   @Column({
     type: 'enum',
     enum: UserRole,
   })
   role: UserRole;
+
+  @Column({ type: 'varchar', nullable: true })
+  passwordResetToken?: string | null;
+
+  @Column({ type: 'timestamp', nullable: true })
+  passwordResetExpires?: Date | null;
 }
