@@ -20,6 +20,7 @@ export interface ConfigType {
   app: {
     port: number;
     nodeEnv: string;
+    frontendUrl: string;
   };
   graphql: {
     playground: boolean;

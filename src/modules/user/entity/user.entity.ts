@@ -1,6 +1,13 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  OneToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { UserRole } from '../enum/user-role.enum';
+import { PasswordReset } from './password-reset.entity';
 
 @ObjectType()
 @Entity()
@@ -31,9 +38,11 @@ export class User {
   })
   role: UserRole;
 
-  @Column({ type: 'varchar', nullable: true })
-  passwordResetToken?: string | null;
-
-  @Column({ type: 'timestamp', nullable: true })
-  passwordResetExpires?: Date | null;
+  @OneToOne(() => PasswordReset, {
+    cascade: true,
+    eager: true,
+    onDelete: 'CASCADE',
+  })
+  @JoinColumn()
+  passwordReset?: PasswordReset | null;
 }

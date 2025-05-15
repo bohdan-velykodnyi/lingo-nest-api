@@ -12,8 +12,10 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { UserService } from 'modules/user/user.service';
 import { Ip } from 'core/decorator/ip.decorator';
 import { TokenService } from './modules/token/token.service';
-import { ForgotPasswordDto } from './dto/forgot-password.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
+
+import { ForgotPasswordService } from './modules/forgot-password/forgot-password.service';
+import { ForgotPasswordDto } from './modules/forgot-password/dto/forgot-password.dto';
+import { ResetPasswordDto } from './modules/forgot-password/dto/reset-password.dto';
 
 @Resolver()
 export class AuthorizationResolver {
@@ -21,6 +23,7 @@ export class AuthorizationResolver {
     private readonly authorizationService: AuthorizationService,
     private readonly userService: UserService,
     private readonly tokenService: TokenService,
+    private readonly forgotPasswordService: ForgotPasswordService,
   ) {}
 
   @Mutation(() => TokenResponse)
@@ -78,7 +81,7 @@ export class AuthorizationResolver {
     @Args('forgotPasswordDto', { type: () => ForgotPasswordDto })
     forgotPasswordDto: ForgotPasswordDto,
   ): Promise<string> {
-    return this.authorizationService.forgotPassword(forgotPasswordDto);
+    return this.forgotPasswordService.forgotPassword(forgotPasswordDto);
   }
 
   @Mutation(() => String)
@@ -86,7 +89,7 @@ export class AuthorizationResolver {
     @Args('resetPasswordDto', { type: () => ResetPasswordDto })
     resetPasswordDto: ResetPasswordDto,
   ): Promise<string> {
-    return this.authorizationService.resetPassword(resetPasswordDto);
+    return this.forgotPasswordService.resetPassword(resetPasswordDto);
   }
 
   @UseGuards(GqlAuthGuard)

@@ -25,7 +25,7 @@ export class MailerConfigService implements MailerOptionsFactory {
         },
       },
       defaults: {
-        from: `"Lingo Nest" <${this.config.user}>`,
+        from: `"Nest Lingo" <${this.config.user}>`,
       },
       template: {
         dir: join(__dirname, '..', '..', 'email-templates'),

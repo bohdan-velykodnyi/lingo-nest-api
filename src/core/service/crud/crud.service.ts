@@ -57,6 +57,16 @@ export abstract class CrudService<T extends BaseEntity> {
     }
   }
 
+  async save(entity: T): Promise<T> {
+    const existingEntity = await this.repository.findOne({
+      where: { id: entity.id } as FindOptionsWhere<T>,
+    });
+    if (!existingEntity) {
+      throw new NotFoundException(`Entity with ID ${entity.id} not found`);
+    }
+    return await this.repository.save(entity);
+  }
+
   async updateAndReturn(
     id: string,
     data: QueryDeepPartialEntity<T>,
