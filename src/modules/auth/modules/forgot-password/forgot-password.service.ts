@@ -57,7 +57,7 @@ export class ForgotPasswordService {
       context: {
         appName: 'NestLingo',
         userName: user.name,
-        resetUrl: `${this.frontendUrl}/reset-password?token=${resetToken}`,
+        resetUrl: `${this.frontendUrl}/auth/reset-password?token=${resetToken}`,
         expirationTime: '1 hour',
         currentYear: new Date().getFullYear(),
       },
