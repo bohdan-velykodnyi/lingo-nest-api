@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>You’re Invited to Join {{appName}}</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      color: #333333;
+    }
+    .container {
+      max-width: 600px;
+      margin: 20px auto;
+      background-color: #ffffff;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      border: 1px solid #dddddd;
+    }
+    .header {
+      text-align: center;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #eeeeee;
+    }
+    .header h1 {
+      margin: 0;
+      font-size: 24px;
+      color: #007bff;
+    }
+    .content {
+      padding: 20px 0;
+      line-height: 1.6;
+      font-size: 16px;
+    }
+    .content p {
+      margin: 10px 0;
+    }
+    .button-container {
+      text-align: center;
+      margin: 30px 0;
+    }
+    .button {
+      background-color: #28a745;
+      color: #ffffff;
+      padding: 12px 25px;
+      text-decoration: none;
+      border-radius: 5px;
+      font-size: 16px;
+      font-weight: bold;
+      display: inline-block;
+    }
+    .button:hover {
+      background-color: #218838;
+    }
+    .footer {
+      text-align: center;
+      padding-top: 20px;
+      border-top: 1px solid #eeeeee;
+      font-size: 12px;
+      color: #777777;
+    }
+    .footer p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>{{appName}} Invitation</h1>
+    </div>
+    <div class="content">
+      <p>Hello,</p>
+      <p><strong>{{inviterName}}</strong> has invited you to join <strong>{{appName}}</strong>.</p>
+      <p>Join now and connect with them on our platform.</p>
+
+      {{#if inviteUrl}}
+      <div class="button-container">
+        <a href="{{inviteUrl}}" class="button">Accept Invitation</a>
+      </div>
+      {{/if}}
+
+      <p>If you weren’t expecting this invitation, you can safely ignore this email.</p>
+      <p>If you need help, please contact our support team at <a href="mailto:{{supportEmail}}">{{supportEmail}}</a>.</p>
+    </div>
+    <div class="footer">
+      <p>&copy; {{currentYear}} {{appName}}. All rights reserved.</p>
+      <p>Need assistance? <a href="mailto:{{supportEmail}}">Contact Support</a>.</p>
+    </div>
+  </div>
+</body>
+</html>

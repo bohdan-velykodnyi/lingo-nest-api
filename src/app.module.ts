@@ -10,6 +10,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { ThrottlerConfigService } from 'core/service/config/throttler.service';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigService } from 'core/service/config/mailer.service';
+import { ContactModule } from 'modules/contact/contact.module';
 
 @Module({
   imports: [
@@ -32,6 +33,7 @@ import { MailerConfigService } from 'core/service/config/mailer.service';
       useClass: MailerConfigService,
     }),
     AuthorizationModule,
+    ContactModule,
   ],
 })
 export class AppModule {}

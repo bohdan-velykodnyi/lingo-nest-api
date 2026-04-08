@@ -4,8 +4,8 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { GqlExecutionContext } from '@nestjs/graphql';
-import { GraphQLError } from 'graphql';
 import { TokenService } from '../modules/token/token.service';
+import { ForbiddenError } from '@nestjs/apollo';
 
 @Injectable()
 export class GqlAuthGuard implements CanActivate {
@@ -18,7 +18,8 @@ export class GqlAuthGuard implements CanActivate {
   public async validate(context: ExecutionContext) {
     const ctx = GqlExecutionContext.create(context).getContext();
 
-    if (!ctx.req.headers.authorization) throw new GraphQLError('Unauthorized');
+    if (!ctx.req.headers.authorization)
+      throw new ForbiddenError('Unauthorized');
 
     const token = ctx.req.headers.authorization.replace('Bearer ', '');
     const res = await this.tokenService.validateAccessToken(token);

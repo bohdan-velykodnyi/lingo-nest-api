@@ -41,8 +41,8 @@ export class ForgotPasswordService {
 
     await this.userService.save({
       ...user,
-      passwordReset: {
-        id: user.passwordReset?.id,
+      password_reset: {
+        id: user.password_reset?.id,
         token: resetToken,
         expires: passwordResetExpires,
       },
@@ -70,7 +70,7 @@ export class ForgotPasswordService {
     const { token, newPassword } = resetPasswordDto;
 
     const user = await this.userService.findOne({
-      where: { passwordReset: { token } },
+      where: { password_reset: { token } },
     });
 
     if (!user) {
@@ -78,10 +78,10 @@ export class ForgotPasswordService {
     }
 
     if (
-      !user.passwordReset.expires ||
-      user.passwordReset.expires < new Date()
+      !user.password_reset.expires ||
+      user.password_reset.expires < new Date()
     ) {
-      await this.passwordResetService.deleteById(user.passwordReset.id);
+      await this.passwordResetService.deleteById(user.password_reset.id);
       throw new BadRequestException('Invalid or expired password reset token.');
     }
 
@@ -89,10 +89,10 @@ export class ForgotPasswordService {
 
     await this.userService.update(user.id, {
       password: hashedPassword,
-      passwordReset: null,
+      password_reset: null,
     });
 
-    await this.passwordResetService.deleteById(user.passwordReset.id);
+    await this.passwordResetService.deleteById(user.password_reset.id);
 
     this.logger.log(`Password reset successful for user: ${user.email}`);
 
