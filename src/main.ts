@@ -5,12 +5,12 @@ import 'tsconfig-paths/register';
 import {
   GraphqlErrorFilter,
   ValidationErrorFilter,
-} from 'core/exception-filter';
-import { PerformanceInterceptor } from 'core/interceptor/performance.interceptor';
-import * as compression from 'compression';
+} from '@/core/exception-filter';
+import { PerformanceInterceptor } from '@/core/interceptor/performance.interceptor';
+import compression from 'compression';
 import helmet from 'helmet';
-import { FileBasedLogger } from 'core/logger/file-based.logger';
-import { CustomValidationPipe } from 'core/pipe/class-validator.pipe';
+import { FileBasedLogger } from '@/core/logger/file-based.logger';
+import { CustomValidationPipe } from '@/core/pipe/class-validator.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {

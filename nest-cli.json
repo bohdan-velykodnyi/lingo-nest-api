@@ -5,7 +5,8 @@
     "assets": [
       "core/email-templates/**/*"
     ],
-    "deleteOutDir": true
+    "deleteOutDir": true,
+    "outputPath": "dist"
   },
   "sourceRoot": "src"
 }

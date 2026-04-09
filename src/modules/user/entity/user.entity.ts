@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { UserRole } from '../enum/user-role.enum';
 import { PasswordReset } from './password-reset.entity';
-import { Contact } from 'modules/contact/entity/contact.entity';
+import { Contact } from '@/modules/contact/entity/contact.entity';
 
 @ObjectType()
 @Entity()

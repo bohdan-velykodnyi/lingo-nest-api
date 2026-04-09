@@ -1,6 +1,6 @@
 import { Field, ID, ObjectType } from '@nestjs/graphql';
 import { Transform } from 'class-transformer';
-import { User } from 'modules/user/entity/user.entity';
+import { User } from '@/modules/user/entity/user.entity';
 import {
   Column,
   CreateDateColumn,

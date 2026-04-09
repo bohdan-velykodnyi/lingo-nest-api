@@ -2,11 +2,11 @@ import { Args, Mutation, Query, Resolver } from '@nestjs/graphql';
 import { ContactService } from './service/contact.service';
 import { Contact } from './entity/contact.entity';
 import { ContactStatus } from './enum/contact-status.enum';
-import { CurrentUser } from 'modules/auth/decorator/current-user';
-import { JwtPayload } from 'modules/auth/modules/token/types/jwt-payload';
+import { CurrentUser } from '@/modules/auth/decorator/current-user';
+import { JwtPayload } from '@/modules/auth/modules/token/types/jwt-payload';
 import { ContactUnion } from './response/contact-union.response';
 import { UseGuards } from '@nestjs/common';
-import { GqlAuthGuard } from 'modules/auth/guards/auth.guard';
+import { GqlAuthGuard } from '@/modules/auth/guards/auth.guard';
 
 @Resolver()
 export class ContactResolver {

@@ -1,10 +1,10 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
-import { CrudService } from 'core/service/crud/crud.service';
+import { CrudService } from '@/core/service/crud/crud.service';
 import { Contact } from '../entity/contact.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { ContactStatus } from '../enum/contact-status.enum';
-import { UserService } from 'modules/user/user.service';
+import { UserService } from '@/modules/user/user.service';
 import { ContactInviteService } from './contact-invite.service';
 import { ContactInvite } from '../entity/contact-invite.entity';
 

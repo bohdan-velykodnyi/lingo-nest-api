@@ -3,13 +3,13 @@ import { Token } from './entity/token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { type JwtPayload } from './types/jwt-payload';
 import { randomBytes } from 'crypto';
-import * as dayjs from 'dayjs';
+import dayjs from 'dayjs';
 import { ConfigService } from '@nestjs/config';
-import { type ConfigType } from 'core/config';
+import { type ConfigType } from '@/core/config';
 import { JwtService } from '@nestjs/jwt';
 import { Cron } from '@nestjs/schedule';
 import { BadRequestException, UnauthorizedException } from '@nestjs/common';
-import { CrudService } from 'core/service/crud/crud.service';
+import { CrudService } from '@/core/service/crud/crud.service';
 
 export class TokenService extends CrudService<Token> {
   private expiresInRefresh: number;

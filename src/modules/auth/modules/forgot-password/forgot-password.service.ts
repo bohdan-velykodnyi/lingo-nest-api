@@ -2,11 +2,11 @@ import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { ForgotPasswordDto } from './dto/forgot-password.dto';
 import { randomBytes } from 'crypto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { UserService } from 'modules/user/user.service';
+import { UserService } from '@/modules/user/user.service';
 import { MailerService } from '@nestjs-modules/mailer';
 import { genSalt, hash } from 'bcryptjs';
 import { ConfigService } from '@nestjs/config';
-import { PasswordResetService } from 'modules/user/password-reset.service';
+import { PasswordResetService } from '@/modules/user/password-reset.service';
 
 const TOKEN_EXPIRY_HOURS = 1 * 60 * 60 * 1000;
 

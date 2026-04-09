@@ -3,7 +3,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { LoginAttempt } from './entity/login-attempt.entity';
 import { Cron } from '@nestjs/schedule';
-import { CrudService } from 'core/service/crud/crud.service';
+import { CrudService } from '@/core/service/crud/crud.service';
 
 @Injectable()
 export class RateLimiterService extends CrudService<LoginAttempt> {

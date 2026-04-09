@@ -1,11 +1,11 @@
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CrudService } from 'core/service/crud/crud.service';
+import { CrudService } from '@/core/service/crud/crud.service';
 import { ContactInvite } from '../entity/contact-invite.entity';
 import { Repository } from 'typeorm';
 import { CreateContactInviteDto } from '../dto/contact-invite.dto';
 import { MailerService } from '@nestjs-modules/mailer';
-import { UserService } from 'modules/user/user.service';
+import { UserService } from '@/modules/user/user.service';
 import * as crypto from 'crypto';
 import { ConfigService } from '@nestjs/config';
 

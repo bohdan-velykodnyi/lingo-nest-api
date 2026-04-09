@@ -8,7 +8,7 @@ import {
   type SelectQueryBuilder,
 } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { CrudService } from 'core/service/crud/crud.service';
+import { CrudService } from '@/core/service/crud/crud.service';
 
 @Injectable()
 export class UserService extends CrudService<User> {
