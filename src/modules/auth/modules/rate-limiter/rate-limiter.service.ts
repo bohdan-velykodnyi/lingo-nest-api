@@ -1,6 +1,6 @@
 import { ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { MoreThan, Repository } from 'typeorm';
+import { LessThan, MoreThan, Repository } from 'typeorm';
 import { LoginAttempt } from './entity/login-attempt.entity';
 import { Cron } from '@nestjs/schedule';
 import { CrudService } from '@/core/service/crud/crud.service';
@@ -62,8 +62,8 @@ export class RateLimiterService extends CrudService<LoginAttempt> {
   public async cleanupOldRecords(): Promise<void> {
     const timeWindow = new Date(Date.now() - this.BLOCK_DURATION);
     await this.deleteByCriteria({
-      timestamp: MoreThan(timeWindow),
+      timestamp: LessThan(timeWindow),
     });
-    this.logger.log('Old login attempts cleaned up');
+    this.logger.log('Old login attempts c leaned up');
   }
 }
