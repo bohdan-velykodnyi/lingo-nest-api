@@ -6,7 +6,6 @@ import { ContactResolver } from './contact.resolver';
 import { UserModule } from '@/modules/user/user.module';
 import { ContactInvite } from './entity/contact-invite.entity';
 import { ContactInviteService } from './service/contact-invite.service';
-
 @Module({
   imports: [TypeOrmModule.forFeature([Contact, ContactInvite]), UserModule],
   providers: [ContactService, ContactInviteService, ContactResolver],

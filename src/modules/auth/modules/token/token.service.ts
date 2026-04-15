@@ -37,16 +37,10 @@ export class TokenService extends CrudService<Token> {
     };
   }
 
-  public async refreshBothTokens(refresh_token: string) {
+  public async consumeRefreshToken(refresh_token: string): Promise<Token> {
     const token = await this.validateRefreshToken(refresh_token);
-
-    const tokens = await this.generateTokens({
-      user_id: token.user_id,
-    });
-
     await this.deleteByCriteria({ id: token.id });
-
-    return tokens;
+    return token;
   }
 
   public async deleteRefreshTokenForUser(user_id: string): Promise<void> {

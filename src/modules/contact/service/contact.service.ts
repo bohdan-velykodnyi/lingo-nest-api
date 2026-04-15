@@ -1,8 +1,12 @@
-import { BadRequestException, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  ForbiddenException,
+  Injectable,
+} from '@nestjs/common';
 import { CrudService } from '@/core/service/crud/crud.service';
 import { Contact } from '../entity/contact.entity';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { DataSource, Repository } from 'typeorm';
 import { ContactStatus } from '../enum/contact-status.enum';
 import { UserService } from '@/modules/user/user.service';
 import { ContactInviteService } from './contact-invite.service';
@@ -15,6 +19,7 @@ export class ContactService extends CrudService<Contact> {
     private readonly contactRepository: Repository<Contact>,
     private readonly userService: UserService,
     private readonly contactInviteService: ContactInviteService,
+    private readonly dataSource: DataSource,
   ) {
     super(contactRepository);
   }
@@ -91,12 +96,55 @@ export class ContactService extends CrudService<Contact> {
     user_id: string,
     status?: ContactStatus,
   ): Promise<Contact[]> {
+    const statusFilter = status ? { status } : {};
     return this.findAll({
       where: [
-        { requester: { id: user_id }, status },
-        { receiver: { id: user_id }, status: ContactStatus.ACCEPTED },
+        { requester: { id: user_id }, ...statusFilter },
+        { receiver: { id: user_id }, ...statusFilter },
       ],
       relations: ['requester', 'receiver'],
+    });
+  }
+
+  public async removeContact(
+    contact_id: string,
+    user_id: string,
+  ): Promise<string> {
+    const contact = await this.findOne({
+      where: [
+        { id: contact_id, requester: { id: user_id } },
+        { id: contact_id, receiver: { id: user_id } },
+      ],
+    });
+
+    if (!contact) throw new BadRequestException('Contact not found');
+
+    return this.deleteById(contact_id);
+  }
+
+  public async acceptEmailInvite(
+    token: string,
+    user_id: string,
+  ): Promise<Contact> {
+    const user = await this.userService.findOneById(user_id);
+    const invite = await this.contactInviteService.findOne({
+      where: { token },
+      relations: ['inviter'],
+    });
+
+    if (!invite) throw new BadRequestException('Invite not found');
+    if (invite.invited_email !== user.email.toLowerCase())
+      throw new ForbiddenException('This invite is not for you');
+
+    return this.dataSource.transaction(async (manager) => {
+      const contact = manager.create(Contact, {
+        requester: { id: invite.inviter.id },
+        receiver: { id: user_id },
+        status: ContactStatus.ACCEPTED,
+      });
+      await manager.save(contact);
+      await manager.delete(ContactInvite, invite.id);
+      return contact;
     });
   }
 }

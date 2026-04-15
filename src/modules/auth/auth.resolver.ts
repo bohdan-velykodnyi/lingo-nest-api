@@ -48,7 +48,7 @@ export class AuthorizationResolver {
     @Args('refresh_token', { type: () => String })
     refresh_token: string,
   ): Promise<TokenResponse> {
-    return this.tokenService.refreshBothTokens(refresh_token);
+    return this.authorizationService.refreshTokens(refresh_token);
   }
 
   @UseGuards(GqlAuthGuard)

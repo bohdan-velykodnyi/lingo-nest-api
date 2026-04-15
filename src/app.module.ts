@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-
+import { APP_GUARD } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { GraphQLModule } from '@nestjs/graphql';
 import { TypeOrmModule } from '@nestjs/typeorm';
@@ -11,6 +11,7 @@ import { ThrottlerConfigService } from '@/core/service/config/throttler.service'
 import { MailerModule } from '@nestjs-modules/mailer';
 import { MailerConfigService } from '@/core/service/config/mailer.service';
 import { ContactModule } from '@/modules/contact/contact.module';
+import { RolesGuard } from '@/modules/auth/guards/roles.guard';
 
 @Module({
   imports: [
@@ -34,6 +35,12 @@ import { ContactModule } from '@/modules/contact/contact.module';
     }),
     AuthorizationModule,
     ContactModule,
+  ],
+  providers: [
+    {
+      provide: APP_GUARD,
+      useClass: RolesGuard,
+    },
   ],
 })
 export class AppModule {}

@@ -25,9 +25,6 @@ export class ContactInvite {
   @Column()
   token: string;
 
-  @Column({ default: false })
-  accepted: boolean;
-
   @CreateDateColumn()
   created_at: Date;
 

@@ -35,15 +35,24 @@ export class AuthorizationService {
 
       const user = await this.validateLogin(credentials);
 
-      const user_id = user.id;
-
       return await this.tokenService.generateTokens({
-        user_id,
+        user_id: user.id,
+        role: user.role,
       });
     } catch (error) {
       await this.rateLimiter.recordFailedAttempt(ip, credentials.email);
       throw error;
     }
+  }
+
+  public async refreshTokens(refresh_token: string): Promise<TokenResponse> {
+    const token = await this.tokenService.consumeRefreshToken(refresh_token);
+    const user = await this.userService.findOneById(token.user_id);
+
+    return this.tokenService.generateTokens({
+      user_id: user.id,
+      role: user.role,
+    });
   }
 
   public async logout(user_id: string, refresh_token: string): Promise<string> {
